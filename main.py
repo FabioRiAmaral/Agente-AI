@@ -12,6 +12,7 @@ logging.basicConfig(
     logging.StreamHandler(sys.stdout)
   ]
 )
+
 class TelegramMessage:
   async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_text = update.message.text # Salva a mensagem enviada no telegran

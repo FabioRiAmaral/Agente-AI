@@ -108,3 +108,5 @@ Werkzeug==3.1.8
 xxhash==3.6.0
 zipp==3.23.0
 zstandard==0.25.0
+#pymupdf, LangChain, chromaDB, hugging face transformers, python-telegram-bot, Flask, dotenv e requests
+# pip install -r requirements.txt
