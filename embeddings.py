@@ -1,4 +1,3 @@
-from pdf_handler import textFromPdf
 from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
