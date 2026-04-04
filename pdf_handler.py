@@ -5,6 +5,7 @@ class textFromPdf:
   def __init__(self, path="./data/"):
     self.path = path
   
+  @staticmethod
   def chunks(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]: # Vai quebrar o texto inteiro em chunks, o modelo de embedding da erro com o texto inteiro
     chuncks = []
     start = 0
