@@ -144,7 +144,8 @@ O resultado é uma resposta que veio do conteúdo real do seu PDF, processada po
 
 O Telegram disponibiliza uma API oficial, uma interface baseada em requisição HTTP, os Bots são criados de maneira simples via [@BotFather](https://core.telegram.org/bots/tutorial), ao criar um Bot pela interface do Telegram você recebe um token exclusivo que é usado pelo codigo para autenticar cada requisição nos servidores do Telegram. No projeto foi usado a biblioteca [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) que abstrai o envio das requisições HTTP para os endpoints do Bot API, passando token e o texto da mensagem ou o indetificador do chat.
 
+Antes de tudo, você precisa entender por que eu decidi usar funções async, um bot de Telegram pode receber mensagens de várias pessoas ao mesmo tempo e se o código fosse normal (síncrono), enquanto o bot estivesse processando a pergunta de uma pessoa, todas as outras ficariam congeladas esperando. O async resolve isso permitindo que o Python "pause" uma tarefa enquanto espera algo demorado (como baixar um arquivo ou aguardar resposta do modelo) e vá atender outra pessoa nesse intervalo, o await é o ponto onde esse "pause" acontece.
 
+E é por aqui que tudo se incia, e também é exatamente aqui que tudo acaba, onde todo esse percurso de código e lógica se colidem, ele cria o primeiro PDF que será tranformados em chunks pelo `pdf_handler.py`, e ao mesmo tempo é o único que coleta os dados fornecidos por `qaChain.py`.
 
-### Como ocorre a integração com Pymupdf
-Neste bloco de código a intenção é receber o PDF baixado do Telegram, tendo 2 métodos dentro da classe. O método `chunks` divide uma string longa em pedaços menores com sobreposição, facilitando posteriormente para ser transformado em Embeddings, que será explicado mais tarde
+Ao receber um PDF é onde toda cadeia do ``qaChain.py`` entra em ação: reseta o ChromaDB, extrai texto do PDF, converte em chunks, transforma em vetores de 384 dimensões e armazena tudo. Depois disso, com uma simples variavel que controla a entrada de pdf, a variavel pdf_indexed se torna True, sinalizando que o bot está pronto para responder perguntas.
