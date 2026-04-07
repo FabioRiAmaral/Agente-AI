@@ -6,7 +6,6 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
  
 def _download_if_needed(hf_name: str, local_path: str) -> None:
   if not os.path.exists(local_path):
-    print(f"Baixando modelo: {hf_name}...")
     tok = MarianTokenizer.from_pretrained(hf_name)
     mdl = MarianMTModel.from_pretrained(hf_name)
     tok.save_pretrained(local_path)

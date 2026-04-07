@@ -218,4 +218,3 @@ __marimo__/
 # Igore folders
 models/
 data/chroma_db/
-data/pdfUsuario.pdf
