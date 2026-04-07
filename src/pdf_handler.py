@@ -2,7 +2,7 @@ import os
 import pymupdf
 
 class textFromPdf:
-  def __init__(self, path="./data/"):
+  def __init__(self, path="../data/"):
     self.path = path
   
   @staticmethod

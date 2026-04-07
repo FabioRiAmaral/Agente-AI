@@ -11,7 +11,7 @@ logging.basicConfig(
   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
   level=logging.INFO,
   handlers=[
-    logging.FileHandler(os.path.join('./data/', 'app.log')), # Log aparece no terminal e no app.log para debbugar erros melhor
+    logging.FileHandler(os.path.join('../data/', 'app.log')), # Log aparece no terminal e no app.log para debbugar erros melhor
     logging.StreamHandler(sys.stdout)
   ]
 )
@@ -33,7 +33,7 @@ async def document(update: Update, context: ContextTypes.DEFAULT_TYPE):
   await update.message.reply_text("PDF recebido! BELINHA SABE TUDO esta lendo")
 
   file = await context.bot.get_file(doc.file_id)
-  await file.download_to_drive("./data/pdfUsuario.pdf")
+  await file.download_to_drive("../data/pdfUsuario.pdf")
   pipeline.index_pdf("pdfUsuario.pdf")
   pdf_indexed = True
   await update.message.reply_text("BELINHA leu seu PDF, faça a sua pergunta!")

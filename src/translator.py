@@ -2,8 +2,9 @@ import os
 import torch
 from transformers import MarianMTModel, MarianTokenizer
 
-MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
- 
+MODELS_DIR = os.path.join('../', "models")
+print(MODELS_DIR)
+
 def _download_if_needed(hf_name: str, local_path: str) -> None:
   if not os.path.exists(local_path):
     tok = MarianTokenizer.from_pretrained(hf_name)
