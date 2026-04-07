@@ -1,9 +1,11 @@
 import os
 import pymupdf
 
+DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+
 class textFromPdf:
-  def __init__(self, path="../data/"):
-    self.path = path
+  def __init__(self, path=None):
+    self.path = path or DATA_DIR
   
   @staticmethod
   def chunks(text: str, chunkSize: int = 500, overlap: int = 50) -> list[str]: # Vai quebrar o texto inteiro em chunks, o modelo de embedding da erro com o texto inteiro

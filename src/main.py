@@ -7,11 +7,13 @@ from qaChain import LangChainPDFPipeline
 # Para usar o bot você deve primeiramente baixar as bibliotecas listadas no requirements.txt
 # Escreva "pip install -r requirements.txt" no terminal, é recomendado também criar um ambiente virtual antes de baixas as bibliotecas
 
+DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+
 logging.basicConfig(
   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
   level=logging.INFO,
   handlers=[
-    logging.FileHandler(os.path.join('../data/', 'app.log')), # Log aparece no terminal e no app.log para debbugar erros melhor
+    logging.FileHandler(os.path.join(DATA_DIR, 'app.log')), # Log aparece no terminal e no app.log para debbugar erros melhor
     logging.StreamHandler(sys.stdout)
   ]
 )
@@ -33,7 +35,8 @@ async def document(update: Update, context: ContextTypes.DEFAULT_TYPE):
   await update.message.reply_text("PDF recebido! BELINHA SABE TUDO esta lendo")
 
   file = await context.bot.get_file(doc.file_id)
-  await file.download_to_drive("../data/pdfUsuario.pdf")
+  pdf_path = os.path.join(DATA_DIR, "pdfUsuario.pdf")
+  await file.download_to_drive(pdf_path)
   pipeline.index_pdf("pdfUsuario.pdf")
   pdf_indexed = True
   await update.message.reply_text("BELINHA leu seu PDF, faça a sua pergunta!")

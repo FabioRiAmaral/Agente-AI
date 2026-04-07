@@ -8,12 +8,13 @@ from embeddings import embeddingsFromText
 from embeddings_store import embeddingsDB
 from translator import Translator
 
-MODELS_DIR = os.path.join('../', "models")
+MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models"))
 
 class LangChainPDFPipeline:
-  def __init__(self, db_path="../data/chroma_db", collection="pdf_collection"):
+  DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+  def __init__(self, db_path=None, collection="pdf_collection"):
+    self.db_path = db_path or os.path.join(LangChainPDFPipeline.DATA_DIR, "chroma_db")
     self.collection_name = collection
-    self.db_path = db_path
     self.pdf_handler = textFromPdf()
     self.embedder = embeddingsFromText()
     self.db = embeddingsDB(dbPath=db_path, collectionName=collection)

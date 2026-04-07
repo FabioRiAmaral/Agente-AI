@@ -2,8 +2,7 @@ import os
 import torch
 from transformers import MarianMTModel, MarianTokenizer
 
-MODELS_DIR = os.path.join('../', "models")
-print(MODELS_DIR)
+MODELS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "models"))
 
 def _download_if_needed(hf_name: str, local_path: str) -> None:
   if not os.path.exists(local_path):

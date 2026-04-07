@@ -1,9 +1,13 @@
+import os
 from pdf_handler import textFromPdf
 from embeddings import embeddingsFromText
 import chromadb
 
+DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data"))
+
 class embeddingsDB():
-  def __init__(self, dbPath="../data/chroma_db", collectionName="pdf_collection"):
+  def __init__(self, dbPath=None, collectionName="pdf_collection"):
+    dbPath = dbPath or os.path.join(DATA_DIR, "chroma_db")
     self.client = chromadb.PersistentClient(dbPath)
     self.collection = self.client.get_or_create_collection(collectionName)
     self.embedder = embeddingsFromText() #necessario por causa do self... Deu muita dor de cabeça
