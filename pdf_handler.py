@@ -6,14 +6,14 @@ class textFromPdf:
     self.path = path
   
   @staticmethod
-  def chunks(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]: # Vai quebrar o texto inteiro em chunks, o modelo de embedding da erro com o texto inteiro
+  def chunks(text: str, chunkSize: int = 500, overlap: int = 50) -> list[str]: # Vai quebrar o texto inteiro em chunks, o modelo de embedding da erro com o texto inteiro
     chuncks = []
     start = 0
     while start < len(text):
-      end = start + chunk_size
+      end = start + chunkSize
       chunk = text[start:end]
       chuncks.append(chunk)
-      start += chunk_size - overlap
+      start += chunkSize - overlap
     return chuncks
   
   def allText(self, docName): #Convert todo o pdf em texto
@@ -21,5 +21,5 @@ class textFromPdf:
     text = ""
     for page in doc:
       text += page.get_text('text')
-    chunks = self.chunks(text, chunk_size=500, overlap=50)
+    chunks = self.chunks(text, chunkSize=500, overlap=50)
     return chunks # Modifiquei pra receber o texto tratado e pronto para o uso

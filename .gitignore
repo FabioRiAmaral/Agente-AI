@@ -214,3 +214,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Igore folders
+models/
+data/chroma_db/
+data/pdfUsuario.pdf

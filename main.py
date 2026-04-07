@@ -2,7 +2,10 @@ import logging, os, sys
 from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, ContextTypes, CommandHandler
 from dotenv import load_dotenv
+from qaChain import LangChainPDFPipeline
 
+# Para usar o bot você deve primeiramente baixar as bibliotecas listadas no requirements.txt
+# Escreva "pip install -r requirements.txt" no terminal, é recomendado também criar um ambiente virtual antes de baixas as bibliotecas
 
 logging.basicConfig(
   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -13,51 +16,52 @@ logging.basicConfig(
   ]
 )
 
-class TelegramMessage:
-  async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_text = update.message.text # Salva a mensagem enviada no telegran
-    
-    await context.bot.send_message( # envia uma mensagem de volta
-      chat_id=update.effective_chat.id,
-      text=update.message.text # A mensagem que volta é a mesma que foi enviada
-      )
-    
-    with open("./data/userInput.txt", "w", encoding="utf-8") as file:
-      file.write(user_text + "\n") 
-    return user_text
-    
-  async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(
-      chat_id=update.effective_chat.id,
-      text="Testando o bot"
-      )
-    
-  async def document(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    document = update.message.document 
-    
-    if document.mime_type == "application/pdf": #Verifica se recebeu de fato um PDF
-      await update.message.reply_text("PDF armazenado no banco de dados!")
-      file = await context.bot.get_file(document.file_id) 
-      await file.download_to_drive("./data\pdfUsuario.pdf") # Salva o PDF recebido na pasta de dados que serão utilizados
-      
-    else:
-      await update.message.reply_text("Não foi recebido o documento do tipo PDF, tente novamente com um PDF")
+pipeline = LangChainPDFPipeline()
+pdf_indexed = False
 
-  load_dotenv()
-  api_key = os.getenv("API_KEY")
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  await update.message.reply_text(
+    "Envie um PDF no chat que eu responderei suas perguntas sobre ele!"
+  )
 
-  if __name__ == '__main__':
-    application = ApplicationBuilder().token(api_key).build()
-    
-    start_handler = CommandHandler('start', start)
-    document_handler = MessageHandler(filters.Document.ALL, document)
-    message_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), message)
+async def document(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  global pdf_indexed
+  doc = update.message.document
+  if doc.mime_type != "application/pdf":
+    await update.message.reply_text("Apenos consigo ler PDF, envie um PDF!")
+    return
+  await update.message.reply_text("PDF recebido! BELINHA SABE TUDO esta lendo")
 
-    application.add_handler(document_handler)
-    application.add_handler(message_handler)
-    application.add_handler(start_handler)
-    
-    application.run_polling()
-    
-TelegramMessage()
-print(TelegramMessage.start)
+  file = await context.bot.get_file(doc.file_id)
+  await file.download_to_drive("./data/pdfUsuario.pdf")
+  pipeline.index_pdf("pdfUsuario.pdf")
+  pdf_indexed = True
+  await update.message.reply_text("BELINHA leu seu PDF, faça a sua pergunta!")
+
+async def message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+  global pdf_indexed
+  if not pdf_indexed:
+    await update.message.reply_text("BELINHA ainda não leu nenhum PDF, envie um PDF primeiro")
+    return
+
+  question = update.message.text
+  await update.message.reply_text("BELINHA esta pensando em como te responder, aguarde...")
+  
+  try:
+    answer = pipeline.qa_with_llm(question)
+    await update.message.reply_text(answer)
+  except Exception as e:
+    logging.error(f"Erro ao processar pergunta: {e}")
+    await update.message.reply_text("Ocorreu um erro ao processar sua pergunta, tente novamente")
+
+load_dotenv()
+api_key = os.getenv("API_KEY")
+
+if __name__ == '__main__':
+  application = ApplicationBuilder().token(api_key).build()
+  
+  application.add_handler(CommandHandler('start', start))
+  application.add_handler(MessageHandler(filters.Document.ALL, document))
+  application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), message))
+  
+  application.run_polling()

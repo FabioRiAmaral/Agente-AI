@@ -3,9 +3,9 @@ from embeddings import embeddingsFromText
 import chromadb
 
 class embeddingsDB():
-  def __init__(self, db_path="./data/chroma_db", collection_name="pdf_collection"):
-    self.client = chromadb.PersistentClient(db_path)
-    self.collection = self.client.get_or_create_collection(collection_name)
+  def __init__(self, dbPath="./data/chroma_db", collectionName="pdf_collection"):
+    self.client = chromadb.PersistentClient(dbPath)
+    self.collection = self.client.get_or_create_collection(collectionName)
     self.embedder = embeddingsFromText() #necessario por causa do self... Deu muita dor de cabeça
     
   def embedding(self, pdf_name):
@@ -24,9 +24,3 @@ class embeddingsDB():
     embeddingQuestion = self.embedder.embedText([question]).cpu().numpy().tolist()
     queryResults = self.collection.query(query_embeddings=embeddingQuestion, n_results=3)
     return queryResults["documents"][0] # Consulta no pdf semantica conforme a pergunta
-
-db = embeddingsDB()
-db.embedding("pdfUsuario.pdf")
-test = db.query("Oque é uma CPU?")
-for e in test:
-  print(f"\n\n-- {e}")
